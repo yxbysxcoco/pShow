@@ -1,10 +1,194 @@
-<!DOCTYPE html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=/pShow/icon.ico><title>途一</title><style>html, body, #app { height: 100%; margin: 0px; padding: 0px; }
-      .d2-home { background-color: #303133; height: 100%; display: flex; flex-direction: column; }
-      .d2-home__main { user-select: none; width: 100%; flex-grow: 1; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-      .d2-home__footer { width: 100%; flex-grow: 0; text-align: center; padding: 1em 0; }
-      .d2-home__footer > a { font-size: 12px; color: #ABABAB; text-decoration: none; }
-      .d2-home__loading { height: 32px; width: 32px; margin-bottom: 20px; }
-      .d2-home__title { color: #FFF; font-size: 14px; margin-bottom: 10px; }
-      .d2-home__sub-title { color: #ABABAB; font-size: 12px; }</style><script>var _hmt = _hmt || [];
-      var hmid = "1dfa88d0c8571eef2d383070cb3e5ca1";
-      (function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?" + hmid; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><link href=/pShow/css/chunk-vendors.043ca037.css rel=stylesheet><link href=/pShow/css/app.eb81bd4c.css rel=stylesheet></head><body><noscript><strong>很抱歉，如果没有 JavaScript 支持，D2Admin 将不能正常工作。请启用浏览器的 JavaScript 然后继续。</strong></noscript><div id=app><div class=d2-home><div class=d2-home__main><img class=d2-home__loading src=./image/loading/loading-spin.svg alt=loading><div class=d2-home__title>正在加载资源</div><div class=d2-home__sub-title>初次加载资源可能需要较多时间 请耐心等待</div></div><div class=d2-home__footer></div></div></div><script src=/pShow/js/chunk-vendors.ba2c378b.js></script><script src=/pShow/js/app.bd864521.js></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="chart-name" content="分组柱状图">
+    <title>上镜数据分析报告</title>
+    <link rel="stylesheet" href="https://gw.alipayobjects.com/os/rmsportal/YmDAMEQVbLJpVbKiRQVX.css" />
+    
+</head>
+<body>
+<script>/*Fixing iframe window.innerHeight 0 issue in Safari*/document.body.clientHeight;</script>
+
+
+<script src="https://gw.alipayobjects.com/os/antv/assets/f2/3.4.2/f2.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/assets/lib/lodash-4.17.4.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/assets/lib/jquery-3.2.1.min.js"></script>
+<!-- 在 PC 上模拟 touch 事件 -->
+<script src="https://gw.alipayobjects.com/os/rmsportal/NjNldKHIVQRozfbAOJUW.js"></script>
+
+  <div>
+    <h4 style="margin-left: 14px;">热门话题</h4>
+    <p style="color: #515151; margin-left: 14px; font-size: 13px;">基于用户关心的话题的市场数据统计(观看)(点赞)</p>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="mountNode"></canvas>
+  </div>
+  <div>
+    <h4 style="margin-left: 14px;">热门标签</h4>
+    <p style="color: #515151; margin-left: 14px; font-size: 13px;">基于市场数据统计的词云</p>
+  </div>
+  <div class="chart-wrapper" >
+    <canvas id="mountNode1"></canvas>
+  </div>
+<script>
+  var data = [{
+    name: '播放量',
+    月份: 'music video',
+    月均降雨量: 1890023
+  }, {
+    name: '播放量',
+    月份: 'drivers',
+    月均降雨量: 5432143
+  }, {
+    name: '播放量',
+    月份: 'best bass',
+    月均降雨量: 783219
+  }, {
+    name: '播放量',
+    月份: 'dance',
+    月均降雨量: 6434219
+  }, {
+    name: '点赞量',
+    月份: 'music video',
+    月均降雨量: 1590023
+  }, {
+    name: '点赞量',
+    月份: 'drivers',
+    月均降雨量: 3734143
+  }, {
+    name: '点赞量',
+    月份: 'best bass',
+    月均降雨量: 658935
+  }, {
+    name: '点赞量',
+    月份: 'dance',
+    月均降雨量: 3213784
+  }];
+  var chart = new F2.Chart({
+    id: 'mountNode',
+    pixelRatio: window.devicePixelRatio
+  });
+  chart.source(data);
+  chart.tooltip({
+    custom: true, // 自定义 tooltip 内容框
+    onChange: function onChange(obj) {
+      var legend = chart.get('legendController').legends.top[0];
+      var tooltipItems = obj.items;
+      var legendItems = legend.items;
+      var map = {};
+      legendItems.map(function(item) {
+        map[item.name] = _.clone(item);
+      });
+      tooltipItems.map(function(item) {
+        var name = item.name;
+        var value = item.value;
+        if (map[name]) {
+          map[name].value = value;
+        }
+      });
+      legend.setItems(_.values(map));
+    },
+    onHide: function onHide() {
+      var legend = chart.get('legendController').legends.top[0];
+      legend.setItems(chart.getLegendItems().country);
+    }
+  });
+
+  chart.interval().position('月份*月均降雨量').color('name').adjust({
+    type: 'dodge',
+    marginRatio: 0.05 // 设置分组间柱子的间距
+  });
+  chart.render();
+</script>
+<script>
+  var Util = F2.Util;
+
+// 获取 text 文本的图形属性
+function getTextAttrs(cfg) {
+  return Util.mix({}, {
+    fillOpacity: cfg.opacity,
+    fontSize: cfg.origin._origin.size,
+    rotate: cfg.origin._origin.rotate * Math.PI / 180,
+    text: cfg.origin._origin.text,
+    textAlign: 'center',
+    fontFamily: cfg.origin._origin.font,
+    fill: cfg.color,
+    textBaseline: 'Alphabetic'
+  }, cfg.style);
+}
+
+// 给point注册一个词云的shape
+F2.Shape.registerShape('point', 'cloud', {
+  draw: function draw(cfg, container) {
+    var attrs = getTextAttrs(cfg);
+    var x = cfg.x;
+    var y = this._coord.y.start - cfg.y;
+    return container.addShape('text', {
+      attrs: Util.mix(attrs, {
+        x: x,
+        y: y
+      })
+    });
+  }
+});
+
+$.getJSON('data.json', function(data) {
+  var dv = new DataSet.View().source(data);
+  var range = dv.range('value');
+  var min = range[0];
+  var max = range[1];
+  var MAX_FONTSIZE = 36; // 最大的字体
+  var MIN_FONTSIZE = 12; // 最小的字体
+  var canvasWidth = $('#mountNode1').width(); // 获取画布宽度
+  var canvasHeight = $('#mountNode1').height(); // 获取画布高度
+  // 生成词云的布局
+  dv.transform({
+    type: 'tag-cloud',
+    fields: ['x', 'value'],
+    size: [canvasWidth, canvasHeight], // 同 canvas 画布保持一致
+    font: 'Verdana',
+    padding: 0,
+    timeInterval: 5000, // max execute time
+    rotate: function rotate() {
+      var random = ~~(Math.random() * 4) % 4;
+      if (random == 2) {
+        random = 0;
+      }
+      return random * 90; // 0, 90, 270
+    },
+    fontSize: function fontSize(d) {
+      if (d.value) {
+        return (d.value - min) / (max - min) * (MAX_FONTSIZE - MIN_FONTSIZE) + MIN_FONTSIZE;
+      }
+      return 0;
+    }
+  });
+
+  var chart = new F2.Chart({
+    id: 'mountNode1',
+    padding: 0,
+    pixelRatio: window.devicePixelRatio
+  });
+  chart.source(dv.rows, {
+    x: {
+      nice: false
+    },
+    y: {
+      nice: false
+    }
+  });
+  chart.legend(false);
+  chart.axis(false);
+  chart.tooltip(false);
+
+  chart.point().position('x*y').color('category').shape('cloud');
+  chart.render();
+});
+</script>
+
+
+</body>
+</html>
